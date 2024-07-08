@@ -2,22 +2,25 @@ import { MachineACafé } from "../src/MachineACafé";
 import { Pièce } from "../src/Pièce";
 import { HardwareFake } from "./utilities/HardwareFake";
 import "./utilities/HardwareMatchers";
+import { MachineACaféBuilder } from "./utilities/MachineACaféBuilder";
 
 describe("MVP", () => {
     test("Cas 2 cafés", () => {
         // ETANT DONNE une machine a café
-        let hardware = new HardwareFake();
-        new MachineACafé(hardware);
+ //       let hardware = new HardwareFake();
+  //      new MachineACafé(hardware);
+
+        let machineACafe= MachineACaféBuilder.ParDéfaut();
 
         // QUAND on insère 50cts, 2 fois
-        hardware.SimulerInsertionPièce(Pièce.CinquanteCentimes);
-        hardware.SimulerInsertionPièce(Pièce.CinquanteCentimes);
+        machineACafe.SimulerInsertionPièce(Pièce.CinquanteCentimes);
+        machineACafe.SimulerInsertionPièce(Pièce.CinquanteCentimes);
 
         // ALORS il a été demandé au hardware de servir deux cafés
-        expect(hardware).xCafésSontServis(2);
+        expect(machineACafe).xCafésSontServis(2);
 
         // ET l'argent est encaissé
-        expect(hardware.CountCollectedMoney()).toEqual(100);
+        expect(machineACafe.CountCollectedMoney()).toEqual(100);
     });
 
     test.each([
