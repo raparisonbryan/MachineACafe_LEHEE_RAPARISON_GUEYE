@@ -176,3 +176,13 @@ describe("Cas Flush money", () => {
         }
     );
 });
+
+// TEST throw erreur quand piece inconnue
+
+// TEST underpayment with exeactly 5 coins and automatic refund
+
+// TEST 5 coins with exact payment
+
+// TEST total fait plus de 50cts sors 1 café mais pas remboursement si FLUSH
+
+
