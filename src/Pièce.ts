@@ -7,9 +7,10 @@ export class Pièce {
     static CinqCentimes: Pièce = new Pièce(5);
     static DeuxCentimes: Pièce = new Pièce(2);
     static UnCentime: Pièce = new Pièce(1);
+    static DummyPiece: Pièce = new Pièce(35);
     private readonly _montant: number;
 
-    getMontant() : number {
+    getMontant(): number {
         return this._montant;
     }
 
@@ -21,30 +22,30 @@ export class Pièce {
         return this._montant < comparée._montant;
     }
 
-    public toString(){
-        return this._montant.toString() + 'cts';
+    public toString() {
+        return this._montant.toString() + "cts";
     }
 
     static Parse(montant: number) {
         switch (montant) {
             case 1:
-                return Pièce.UnCentime
+                return Pièce.UnCentime;
             case 2:
-                return Pièce.DeuxCentimes
+                return Pièce.DeuxCentimes;
             case 5:
-                return Pièce.CinqCentimes
+                return Pièce.CinqCentimes;
             case 10:
-                return Pièce.DixCentimes
+                return Pièce.DixCentimes;
             case 20:
-                return Pièce.VingtCentimes
+                return Pièce.VingtCentimes;
             case 50:
-                return Pièce.CinquanteCentimes
+                return Pièce.CinquanteCentimes;
             case 100:
-                return Pièce.UnEuro
+                return Pièce.UnEuro;
             case 200:
-                return Pièce.DeuxEuros
+                return Pièce.DeuxEuros;
             default:
-                throw new Error()
+                throw new Error();
         }
     }
 }

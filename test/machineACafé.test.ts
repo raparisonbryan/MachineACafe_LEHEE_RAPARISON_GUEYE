@@ -16,11 +16,6 @@ describe("MVP", () => {
         // ALORS il a été demandé au hardware de servir deux cafés
         expect(hardware).xCafésSontServis(2);
 
-        console.log(
-            "hardware.CountStoredMoney()",
-            hardware.CountCollectedMoney()
-        );
-
         // ET l'argent est encaissé
         expect(hardware.CountCollectedMoney()).toEqual(100);
     });
@@ -70,6 +65,19 @@ describe("MVP", () => {
             expect(machineACafé.argentEncaisséEnCentimes).toEqual(0);
         }
     );
+
+    test("Cas pièce invalide", () => {
+        // ETANT DONNE une machine a café
+        let hardware = new HardwareFake();
+        let machineACafé = new MachineACafé(hardware);
+
+        // ET une pièce invalizde
+        const insertFalsyCoin = () => {
+            hardware.SimulerInsertionPièce(Pièce.DummyPiece);
+        };
+
+        expect(insertFalsyCoin).toThrow(Error);
+    });
 });
 
 describe("Plusieurs pièces", () => {
@@ -177,12 +185,71 @@ describe("Cas Flush money", () => {
     );
 });
 
-// TEST throw erreur quand piece inconnue
+describe("Cas 5 pièces", () => {
+    test("Cas 5 pièces 10cts", () => {
+        // ETANT DONNE une machine a café
+        let hardware = new HardwareFake();
+        new MachineACafé(hardware);
 
-// TEST underpayment with exeactly 5 coins and automatic refund
+        // QUAND on insère 5 pièces de 10cts
+        for (let i = 0; i < 5; i++) {
+            hardware.SimulerInsertionPièce(Pièce.DixCentimes);
+        }
 
-// TEST 5 coins with exact payment
+        // ALORS il a été demandé au hardware de servir un café
+        expect(hardware).unCaféEstServi();
 
-// TEST total fait plus de 50cts sors 1 café mais pas remboursement si FLUSH
+        // ET l'argent est encaissé
+        expect(hardware.CountCollectedMoney()).toEqual(50);
 
+        // ET l'argent encaissé est remis à zéro
+        expect(hardware.CountStoredMoney()).toEqual(0);
+    });
 
+    test("Cas 4 pieces 10cts et 1 de 2 euros et pas de remboursement", () => {
+        // ETANT DONNE une machine a café
+        let hardware = new HardwareFake();
+        new MachineACafé(hardware);
+
+        // QUAND on insère 5 pièces de 10cts
+        for (let i = 0; i < 5; i++) {
+            if (i < 4) {
+                return hardware.SimulerInsertionPièce(Pièce.DixCentimes);
+            }
+
+            return hardware.SimulerInsertionPièce(Pièce.UnEuro);
+        }
+
+        // ALORS il a été demandé au hardware de servir un café
+        expect(hardware).unCaféEstServi();
+
+        // ET l'argent est encaissé
+        expect(hardware.CountCollectedMoney()).toEqual(140);
+
+        // ET si je flush
+        hardware.FlushStoredMoney();
+
+        // ET il n'y aura pas d'argent remboursé
+        expect(hardware.CountStoredMoney()).toEqual(0);
+    });
+
+    test("Cas 5 pices et total < 50cts donc remboursement", () => {
+        // ETANT DONNE une machine a café
+        let hardware = new HardwareFake();
+        const machineACafe = new MachineACafé(hardware);
+
+        // QUAND on insère 5 pièces de 5cts
+        for (let i = 0; i < 5; i++) {
+            hardware.SimulerInsertionPièce(Pièce.CinqCentimes);
+        }
+
+        // ALORS aucun café n'est servi
+        expect(hardware).aucunCaféNEstServi();
+
+        // ET pas d'argent encaissé
+        expect(hardware.CountCollectedMoney()).toEqual(0);
+
+        // ET argent remboursé égal 5 pièces insérées
+        expect(machineACafe.argentEncaisséEnCentimes).toEqual(25);
+    });
+});
