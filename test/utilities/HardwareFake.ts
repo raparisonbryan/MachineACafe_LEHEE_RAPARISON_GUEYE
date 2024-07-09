@@ -20,14 +20,7 @@ export class HardwareFake implements HardwareInterface {
         this._moneyInsertedCallback = callback;
     }
 
-    public SimulerInsertionPièce(pièce: Pièce | Pièce[]): void {
-        if (pièce instanceof Array) {
-            for (let i = 0; i < pièce.length; i++) {
-                this._moneyInsertedCallback(pièce[i].getMontant());
-            }
-            return;
-        }
-
+    public SimulerInsertionPièce(pièce: Pièce): void {
         this._moneyInsertedCallback(pièce.getMontant());
     }
 
@@ -84,7 +77,6 @@ export class HardwareFake implements HardwareInterface {
             this._storedMoney < Pièce.CinquanteCentimes.getMontant()
         ) {
             this.RefundMoneyLessThanCoffeePrice();
-            
         }
     }
 

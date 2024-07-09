@@ -1,6 +1,4 @@
-import { MachineACafé } from "../src/MachineACafé";
 import { Pièce } from "../src/Pièce";
-import { HardwareFake } from "./utilities/HardwareFake";
 import "./utilities/HardwareMatchers";
 import { MachineACaféBuilder } from "./utilities/MachineACaféBuilder";
 
@@ -97,8 +95,10 @@ describe("Plusieurs pièces", () => {
             // ET une pièce d'une valeur inférieure 50cts
             const machineACafe = MachineACaféBuilder.ParDéfaut();
 
-            // QUAND on insère la pièce
-            machineACafe.SimulerInsertionPièce([pièce, pièce2]);
+            // QUAND on insère les pièces
+            [pièce, pièce2].forEach((coin) =>
+                machineACafe.SimulerInsertionPièce(coin)
+            );
 
             // ALORS il n'a pas été demandé au hardware de servir un café
             expect(machineACafe).aucunCaféNEstServi();
@@ -122,8 +122,10 @@ describe("Plusieurs pièces", () => {
             // ET double de valeur définie
             const machineACafe = MachineACaféBuilder.ParDéfaut();
 
-            // QUAND on insère la pièce
-            machineACafe.SimulerInsertionPièce([pièce, pièce2]);
+            // QUAND on insère les pièces
+            [pièce, pièce2].forEach((coin) =>
+                machineACafe.SimulerInsertionPièce(coin)
+            );
 
             // QUAND on récupère sa monnaie
             machineACafe.FlushStoredMoney();
@@ -150,8 +152,10 @@ describe("Plusieurs pièces", () => {
         // ET double de valeur définie
         const machineACafe = MachineACaféBuilder.ParDéfaut();
 
-        // QUAND on insère la pièce
-        machineACafe.SimulerInsertionPièce([pièce, pièce2]);
+        // QUAND on insère les pièces
+        [pièce, pièce2].forEach((coin) =>
+            machineACafe.SimulerInsertionPièce(coin)
+        );
 
         // ALORS il n'a pas été demandé au hardware de servir un café
         expect(machineACafe).unCaféEstServi();
@@ -232,7 +236,9 @@ describe("Cas 5 pièces", () => {
             .reduce((a, b) => a + b, 0);
 
         // QUAND on insère 5 pièces de 10cts
-        machineACafe.SimulerInsertionPièce(coinsInserted);
+        coinsInserted.forEach((coin) =>
+            machineACafe.SimulerInsertionPièce(coin)
+        );
 
         // ALORS il a été demandé au hardware de servir un café
         expect(machineACafe).unCaféEstServi();
@@ -258,7 +264,9 @@ describe("Cas 5 pièces", () => {
             .reduce((a, b) => a + b, 0);
 
         // QUAND on insère 5 pièces de 5cts
-        machineACafe.SimulerInsertionPièce(coinsInserted);
+        coinsInserted.forEach((coin) =>
+            machineACafe.SimulerInsertionPièce(coin)
+        );
 
         // ALORS aucun café n'est servi
         expect(machineACafe).aucunCaféNEstServi();

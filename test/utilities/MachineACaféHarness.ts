@@ -10,7 +10,7 @@ export class MachineACaféHarness extends MachineACafé {
         this.hardware = hardware;
     }
 
-    public SimulerInsertionPièce(pièce: Pièce | Pièce[]): void {
+    public SimulerInsertionPièce(pièce: Pièce): void {
         this.hardware.SimulerInsertionPièce(pièce);
     }
 
@@ -42,7 +42,7 @@ export class MachineACaféHarness extends MachineACafé {
         return this.hardware.CollectStoredMoney(storedMoney);
     }
 
-    public RefundMoneyGreaterThanCoffeePrice():  void {
+    public RefundMoneyGreaterThanCoffeePrice(): void {
         return this.hardware.RefundMoneyGreaterThanCoffeePrice();
     }
 }
