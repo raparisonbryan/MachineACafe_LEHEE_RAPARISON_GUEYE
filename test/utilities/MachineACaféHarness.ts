@@ -33,16 +33,4 @@ export class MachineACaféHarness extends MachineACafé {
     public FlushStoredMoney(): void {
         return this.hardware.FlushStoredMoney();
     }
-
-    public CollectCollectedMoney(argentEncaisse: number): number {
-        return this.hardware.CollectCollectedMoney();
-    }
-
-    public CollectStoredMoney(storedMoney: number): number {
-        return this.hardware.CollectStoredMoney(storedMoney);
-    }
-
-    public RefundMoneyGreaterThanCoffeePrice(): void {
-        return this.hardware.RefundMoneyGreaterThanCoffeePrice();
-    }
 }
