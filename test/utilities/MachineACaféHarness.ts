@@ -1,37 +1,36 @@
-import { HardwareInterface } from "../../src/hardware/hardware.interface";
 import { MachineACafé } from "../../src/MachineACafé";
 import { Pièce } from "../../src/Pièce";
 import { HardwareFake } from "./HardwareFake";
 
 export class MachineACaféHarness extends MachineACafé {
-  private hardware: HardwareFake;
+    private hardware: HardwareFake;
 
-  constructor(hardware: HardwareFake) {
-    super(hardware);
-    this.hardware = hardware;
-  }
+    constructor(hardware: HardwareFake) {
+        super(hardware);
+        this.hardware = hardware;
+    }
 
-  public SimulerInsertionPièce(pièce: Pièce | Pièce[]): void {
-    this.hardware.SimulerInsertionPièce(pièce);
-  }
+    public SimulerInsertionPièce(pièce: Pièce | Pièce[]): void {
+        this.hardware.SimulerInsertionPièce(pièce);
+    }
 
-  public CountInvocationsMakeACoffee() {
-    return this.hardware.CountInvocationsMakeACoffee();
-  }
+    public CountInvocationsMakeACoffee() {
+        return this.hardware.CountInvocationsMakeACoffee();
+    }
 
-  public CountCollectedMoney(): number {
-    return this.hardware.CountCollectedMoney();
-  }
+    public CountCollectedMoney(): number {
+        return this.hardware.CountCollectedMoney();
+    }
 
-  public CountStoredMoney(): number {
-    return this.hardware.CountStoredMoney();
-  }
+    public CountStoredMoney(): number {
+        return this.hardware.CountStoredMoney();
+    }
 
-  public FlushStoredMoney(): number {
-    return this.hardware.FlushStoredMoney();
-  }
+    public FlushStoredMoney(): number {
+        return this.hardware.FlushStoredMoney();
+    }
 
-  public CollectCollectedMoney(argentEncaisse: number): number {
-    return this.hardware.CollectCollectedMoney(argentEncaisse);
-  }
+    public CollectCollectedMoney(argentEncaisse: number): number {
+        return this.hardware.CollectCollectedMoney(argentEncaisse);
+    }
 }
