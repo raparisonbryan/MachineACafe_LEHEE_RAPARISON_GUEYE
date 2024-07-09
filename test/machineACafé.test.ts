@@ -278,3 +278,28 @@ describe("Cas 5 pièces", () => {
         expect(machineACafe.CountRefundedMoney()).toEqual(coinValuesInserted);
     });
 });
+
+describe("cas 6 pièces", () => {
+    test("cas 6 pièces 10cts", () => {
+        // ETANT DONNE une machine a café
+        const machineACafe = MachineACaféBuilder.ParDéfaut();
+
+        // QUAND on insère 6 pièces de 10cts
+        for (let i = 0; i < 6; i++) {
+            machineACafe.SimulerInsertionPièce(Pièce.DixCentimes);
+        }
+
+        // ALORS il a été demandé au hardware de servir un café
+        expect(machineACafe).unCaféEstServi();
+
+        // ET l'argent est encaissé
+        expect(machineACafe.CountCollectedMoney()).toEqual(
+            Pièce.CinquanteCentimes.getMontant()
+        );
+
+        // ET l'argent dans monnayeur est égale à 10cts
+        expect(machineACafe.CountStoredMoney()).toEqual(
+            Pièce.DixCentimes.getMontant()
+        );
+    });
+});
