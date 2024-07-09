@@ -6,10 +6,12 @@ export class HardwareFake implements HardwareInterface {
     private _invocationsMakeACoffee: number = 0;
     private _storedMoney: number = 0;
     private _collectedMoney: number = 0;
+    private _refundedMoney: number = 0;
+    private _coinsInserted: number = 0;
 
-    MakeACoffee(argentEncaisse: number): boolean {
+    MakeACoffee(): boolean {
         this._invocationsMakeACoffee++;
-        this.CollectCollectedMoney(argentEncaisse);
+        this.CollectCollectedMoney();
 
         return true;
     }
@@ -41,14 +43,58 @@ export class HardwareFake implements HardwareInterface {
         return this._storedMoney;
     }
 
-    public FlushStoredMoney(): number {
+    public CountRefundedMoney(): number {
+        return this._refundedMoney;
+    }
+
+    public FlushStoredMoney(): void {
+        if (this._storedMoney >= Pièce.CinquanteCentimes.getMontant()) return;
+
+        this.RefundMoneyLessThanCoffeePrice();
         this._storedMoney = 0;
+    }
+
+    private RefundMoneyLessThanCoffeePrice(): void {
+        this._refundedMoney = this._storedMoney;
+
+        this._storedMoney = 0;
+        this._coinsInserted = 0;
+    }
+
+    public RefundMoneyGreaterThanCoffeePrice(): void {
+        if (this._storedMoney < Pièce.CinquanteCentimes.getMontant()) return;
+
+        this._refundedMoney =
+            this._storedMoney - Pièce.CinquanteCentimes.getMontant();
+    }
+
+    public CollectStoredMoney(storedMoney: number): number {
+        this._storedMoney += storedMoney;
+
+        this.CollecCoinsInserted();
+
         return this._storedMoney;
     }
 
-    public CollectCollectedMoney(argentEncaisse: number): number {
+    private CollecCoinsInserted(): void {
+        this._coinsInserted++;
+
+        if (
+            this._coinsInserted >= 5 &&
+            this._storedMoney < Pièce.CinquanteCentimes.getMontant()
+        ) {
+            this.RefundMoneyLessThanCoffeePrice();
+            
+        }
+    }
+
+    public CollectCollectedMoney(): number {
+        this._storedMoney -= this._refundedMoney;
+
+        this._collectedMoney += this._storedMoney;
+
         this._storedMoney = 0;
-        this._collectedMoney += argentEncaisse;
+        this._coinsInserted = 0;
 
         return this._collectedMoney;
     }

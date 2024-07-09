@@ -17,7 +17,9 @@ describe("MVP", () => {
         expect(machineACafe).xCafésSontServis(2);
 
         // ET l'argent est encaissé
-        expect(machineACafe.CountCollectedMoney()).toEqual(100);
+        expect(machineACafe.CountCollectedMoney()).toEqual(
+            Pièce.UnEuro.getMontant()
+        );
     });
 
     test.each([
@@ -38,9 +40,7 @@ describe("MVP", () => {
         expect(machineACafe).aucunCaféNEstServi();
 
         // ET l'argent n'est pas encaissé
-        expect(machineACafe.argentEncaisséEnCentimes).toEqual(
-            pièce.getMontant()
-        );
+        expect(machineACafe.CountStoredMoney()).toEqual(pièce.getMontant());
     });
 
     test.each([Pièce.CinquanteCentimes, Pièce.UnEuro, Pièce.DeuxEuros])(
@@ -58,11 +58,16 @@ describe("MVP", () => {
 
             // ET l'argent est encaissé
             expect(machineACafe.CountCollectedMoney()).toEqual(
-                pièce.getMontant()
+                Pièce.CinquanteCentimes.getMontant()
             );
 
             // ET l'argent encaissé est remis à zéro
-            expect(machineACafe.argentEncaisséEnCentimes).toEqual(0);
+            expect(machineACafe.CountStoredMoney()).toEqual(0);
+
+            // ET l'argent remboursé est remis au user
+            expect(machineACafe.CountRefundedMoney()).toEqual(
+                pièce.getMontant() - Pièce.CinquanteCentimes.getMontant()
+            );
         }
     );
 
@@ -99,7 +104,7 @@ describe("Plusieurs pièces", () => {
             expect(machineACafe).aucunCaféNEstServi();
 
             // ET l'argent est dans le monnayeur
-            expect(machineACafe.argentEncaisséEnCentimes).toEqual(
+            expect(machineACafe.CountStoredMoney()).toEqual(
                 pièce.getMontant() + pièce2.getMontant()
             );
         }
@@ -128,7 +133,9 @@ describe("Plusieurs pièces", () => {
 
             // ET l'argent n'est pas encaissé
             expect(machineACafe.CountStoredMoney()).toEqual(0);
-            expect(machineACafe.argentEncaisséEnCentimes).toEqual(
+
+            // ET argent remboursé est égal à la somme des pièces insérées
+            expect(machineACafe.CountRefundedMoney()).toEqual(
                 pièce.getMontant() + pièce2.getMontant()
             );
         }
@@ -151,9 +158,15 @@ describe("Plusieurs pièces", () => {
 
         // ET l'argent est encaissé
         expect(machineACafe.CountCollectedMoney()).toEqual(
-            pièce.getMontant() + pièce2.getMontant()
+            Pièce.CinquanteCentimes.getMontant()
         );
-        expect(machineACafe.CountStoredMoney()).toEqual(0);
+
+        // ET argent remboursé est égal à la difference entre argent inséré et prix café
+        expect(machineACafe.CountRefundedMoney()).toEqual(
+            pièce.getMontant() +
+                pièce2.getMontant() -
+                Pièce.CinquanteCentimes.getMontant()
+        );
     });
 });
 
@@ -175,7 +188,9 @@ describe("Cas Flush money", () => {
             expect(machineACafe).aucunCaféNEstServi();
 
             // ET l'argent a été rendu
-            expect(machineACafe.CountStoredMoney()).toEqual(0);
+            expect(machineACafe.CountRefundedMoney()).toEqual(
+                pièce.getMontant()
+            );
         }
     );
 });
@@ -194,46 +209,56 @@ describe("Cas 5 pièces", () => {
         expect(machineACafe).unCaféEstServi();
 
         // ET l'argent est encaissé
-        expect(machineACafe.CountCollectedMoney()).toEqual(50);
+        expect(machineACafe.CountCollectedMoney()).toEqual(
+            Pièce.CinquanteCentimes.getMontant()
+        );
 
         // ET l'argent encaissé est remis à zéro
         expect(machineACafe.CountStoredMoney()).toEqual(0);
     });
 
-    test("Cas 4 pieces 10cts et 1 de 2 euros et pas de remboursement", () => {
+    test("Cas 4 pieces 10cts et 1 de 2 euros et REMBOURSEMENT DU RESTE", () => {
         // ETANT DONNE une machine a café
         const machineACafe = MachineACaféBuilder.ParDéfaut();
+        const coinsInserted = [
+            Pièce.DixCentimes,
+            Pièce.DixCentimes,
+            Pièce.DixCentimes,
+            Pièce.DixCentimes,
+            Pièce.DeuxEuros,
+        ];
+        const coinValuesInserted = coinsInserted
+            .map((coin) => coin.getMontant())
+            .reduce((a, b) => a + b, 0);
 
         // QUAND on insère 5 pièces de 10cts
-        for (let i = 0; i < 5; i++) {
-            if (i < 4) {
-                return machineACafe.SimulerInsertionPièce(Pièce.DixCentimes);
-            }
-
-            return machineACafe.SimulerInsertionPièce(Pièce.UnEuro);
-        }
+        machineACafe.SimulerInsertionPièce(coinsInserted);
 
         // ALORS il a été demandé au hardware de servir un café
         expect(machineACafe).unCaféEstServi();
 
         // ET l'argent est encaissé
-        expect(machineACafe.CountCollectedMoney()).toEqual(140);
+        expect(machineACafe.CountCollectedMoney()).toEqual(
+            Pièce.CinquanteCentimes.getMontant()
+        );
 
-        // ET si je flush
-        machineACafe.FlushStoredMoney();
-
-        // ET il n'y aura pas d'argent remboursé
-        expect(machineACafe.CountStoredMoney()).toEqual(0);
+        // ET il argent remboursé du reste
+        expect(machineACafe.CountRefundedMoney()).toEqual(
+            coinValuesInserted - Pièce.CinquanteCentimes.getMontant()
+        );
     });
 
     test("Cas 5 pices et total < 50cts donc remboursement", () => {
         // ETANT DONNE une machine a café
         const machineACafe = MachineACaféBuilder.ParDéfaut();
 
+        const coinsInserted = Array(5).fill(Pièce.CinqCentimes);
+        const coinValuesInserted = coinsInserted
+            .map((coin) => coin.getMontant())
+            .reduce((a, b) => a + b, 0);
+
         // QUAND on insère 5 pièces de 5cts
-        for (let i = 0; i < 5; i++) {
-            machineACafe.SimulerInsertionPièce(Pièce.CinqCentimes);
-        }
+        machineACafe.SimulerInsertionPièce(coinsInserted);
 
         // ALORS aucun café n'est servi
         expect(machineACafe).aucunCaféNEstServi();
@@ -242,6 +267,6 @@ describe("Cas 5 pièces", () => {
         expect(machineACafe.CountCollectedMoney()).toEqual(0);
 
         // ET argent remboursé égal 5 pièces insérées
-        expect(machineACafe.argentEncaisséEnCentimes).toEqual(25);
+        expect(machineACafe.CountRefundedMoney()).toEqual(coinValuesInserted);
     });
 });
