@@ -1,9 +1,9 @@
-import { HardwareFake } from "./HardwareFake";
 import { expect } from "@jest/globals";
 import type { MatcherFunction } from "expect";
+import { MachineACaféHarness } from "./MachineACaféHarness";
 
 const aucunCaféNEstServi: MatcherFunction = function (actual: unknown) {
-    if (!(actual instanceof HardwareFake))
+    if (!(actual instanceof MachineACaféHarness))
         throw new Error("Only works with MachineACaféHarness");
 
     const delta = actual.CountInvocationsMakeACoffee();
@@ -19,7 +19,7 @@ const aucunCaféNEstServi: MatcherFunction = function (actual: unknown) {
 };
 
 const unCaféEstServi: MatcherFunction = function (actual: unknown) {
-    if (!(actual instanceof HardwareFake))
+    if (!(actual instanceof MachineACaféHarness))
         throw new Error("Only works with MachineACaféHarness");
 
     const delta = actual.CountInvocationsMakeACoffee();
@@ -38,7 +38,7 @@ const xCafésSontServis: MatcherFunction<[expected: unknown]> = function (
     actual: unknown,
     expected: unknown
 ) {
-    if (!(actual instanceof HardwareFake))
+    if (!(actual instanceof MachineACaféHarness))
         throw new Error("Only works with HardwareFake");
 
     if (!Number.isInteger(expected)) throw new Error("Only works with integer");
