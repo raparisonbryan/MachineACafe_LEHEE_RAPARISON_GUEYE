@@ -1,18 +1,18 @@
 import { HardwareInterface } from "../../src/hardware/hardware.interface";
 import { Pièce } from "../../src/Pièce";
+import { HardwareDummy } from "./HardwareDummy";
 
-export class HardwareFake implements HardwareInterface {
+export interface HardwareFakeInterface extends HardwareInterface {
+    SimulerInsertionPièce(pièce: Pièce): void;
+    CountInvocationsMakeACoffee(): number;
+}
+
+export class HardwareFake extends HardwareDummy {
     private _moneyInsertedCallback: (coinValue: number) => void = () => {};
     private _invocationsMakeACoffee: number = 0;
-    private _storedMoney: number = 0;
-    private _collectedMoney: number = 0;
-    private _refundedMoney: number = 0;
-    private _coinsInserted: number = 0;
 
     MakeACoffee(): boolean {
         this._invocationsMakeACoffee++;
-        this.CollectCollectedMoney();
-
         return true;
     }
 
@@ -24,70 +24,11 @@ export class HardwareFake implements HardwareInterface {
         this._moneyInsertedCallback(pièce.getMontant());
     }
 
-    public CountInvocationsMakeACoffee() {
+    public CountInvocationsMakeACoffee(): number {
         return this._invocationsMakeACoffee;
     }
 
-    public CountCollectedMoney(): number {
-        return this._collectedMoney;
-    }
-
-    public CountStoredMoney(): number {
-        return this._storedMoney;
-    }
-
-    public CountRefundedMoney(): number {
-        return this._refundedMoney;
-    }
-
     public FlushStoredMoney(): void {
-        if (this._storedMoney >= Pièce.CinquanteCentimes.getMontant()) return;
-
-        this.RefundMoneyLessThanCoffeePrice();
-        this._storedMoney = 0;
-    }
-
-    private RefundMoneyLessThanCoffeePrice(): void {
-        this._refundedMoney = this._storedMoney;
-
-        this._storedMoney = 0;
-        this._coinsInserted = 0;
-    }
-
-    public RefundMoneyGreaterThanCoffeePrice(): void {
-        if (this._storedMoney < Pièce.CinquanteCentimes.getMontant()) return;
-
-        this._refundedMoney =
-            this._storedMoney - Pièce.CinquanteCentimes.getMontant();
-    }
-
-    public CollectStoredMoney(storedMoney: number): number {
-        this._storedMoney += storedMoney;
-
-        this.CollecCoinsInserted();
-
-        return this._storedMoney;
-    }
-
-    private CollecCoinsInserted(): void {
-        this._coinsInserted++;
-
-        if (
-            this._coinsInserted >= 5 &&
-            this._storedMoney < Pièce.CinquanteCentimes.getMontant()
-        ) {
-            this.RefundMoneyLessThanCoffeePrice();
-        }
-    }
-
-    public CollectCollectedMoney(): number {
-        this._storedMoney -= this._refundedMoney;
-
-        this._collectedMoney += this._storedMoney;
-
-        this._storedMoney = 0;
-        this._coinsInserted = 0;
-
-        return this._collectedMoney;
+        this._invocationsMakeACoffee = 0;
     }
 }

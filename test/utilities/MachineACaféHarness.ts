@@ -18,16 +18,16 @@ export class MachineACaféHarness extends MachineACafé {
         return this.hardware.CountInvocationsMakeACoffee();
     }
 
-    public CountCollectedMoney(): number {
-        return this.hardware.CountCollectedMoney();
+    public CountCollectedMoneyHarness(): number {
+        return this.CountCollectedMoney();
     }
 
-    public CountRefundedMoney(): number {
-        return this.hardware.CountRefundedMoney();
+    public CountRefundedMoneyHarness(): number {
+        return this.CountRefundedMoney();
     }
 
-    public CountStoredMoney(): number {
-        return this.hardware.CountStoredMoney();
+    public CountStoredMoneyHarness(): number {
+        return this.CountStoredMoney();
     }
 
     public FlushStoredMoney(): void {
