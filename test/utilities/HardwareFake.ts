@@ -1,22 +1,20 @@
 import { CoinCodes, HardwareInterface } from "../../src/hardware/hardware.interface";
 import { Pièce } from "../../src/Pièce";
+import { HardwareDummy } from "./HardwareDummy";
 
-export class HardwareFake implements HardwareInterface {
-  private _moneyInsertedCallback: (coinValue: number) => void = () => {};
-  private _invocationsMakeACoffee: number = 0;
-  protected _storedMoney: number = 0;
-  protected _collectedMoney: number = 0;
-  protected _refundedMoney: number = 0;
+export interface HardwareFakeInterface extends HardwareInterface {
+    SimulerInsertionPièce(pièce: Pièce): void;
+    CountInvocationsMakeACoffee(): number;
+}
 
-  MakeACoffee(): boolean {
-    this._invocationsMakeACoffee++;
-    this.CollectStoredMoney();
-    return true;
-  }
+export class HardwareFake extends HardwareDummy {
+    private _moneyInsertedCallback: (coinValue: number) => void = () => {};
+    private _invocationsMakeACoffee: number = 0;
 
-  RegisterMoneyInsertedCallback(callback: (coinValue: number) => void): void {
-    this._moneyInsertedCallback = callback;
-  }
+    MakeACoffee(): boolean {
+        this._invocationsMakeACoffee++;
+        return true;
+    }
 
   public SimulerInsertionPièce(pièce: Pièce): void {
     this._moneyInsertedCallback(pièce.getMontant());
@@ -26,23 +24,11 @@ export class HardwareFake implements HardwareInterface {
     return this._invocationsMakeACoffee;
   }
 
+    public CountInvocationsMakeACoffee(): number {
+        return this._invocationsMakeACoffee;
+    }
 
-  public FlushStoredMoney(): void {
-    if (this._storedMoney >= Pièce.CinquanteCentimes.getMontant()) return;
-
-    this._refundedMoney = this._storedMoney;
-    this._storedMoney = 0;
-  }
-
-  public CollectStoredMoney(): void {
-    this._collectedMoney = Pièce.CinquanteCentimes.getMontant();
-
-    this._invocationsMakeACoffee = 0;
-    this._storedMoney = 0;
-  }
-
-  DropCashback(coin_code: CoinCodes): boolean {
-    if (coin_code <= Pièce.CinquanteCentimes.getMontant()) return false;
-    return true;
-  }
+    public FlushStoredMoney(): void {
+        this._invocationsMakeACoffee = 0;
+    }
 }
