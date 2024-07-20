@@ -11,16 +11,12 @@ export class MachineACafé {
     private _refundedMoney: number = 0;
     private _coinsInserted: number = 0;
 
-    constructor(hardware: HardwareInterface) {
-        hardware.RegisterMoneyInsertedCallback((montant: number) => {
-            this.insérer(Pièce.Parse(montant));
-        });
-
   constructor(hardware: HardwareInterface) {
     hardware.RegisterMoneyInsertedCallback((montant: number) => {
       this.insérer(Pièce.Parse(montant));
     });
     this._hardware = hardware;
+    }
 
     private insérer(pièce: Pièce) {
         this.CollectStoredMoney(pièce.getMontant());
@@ -45,9 +41,10 @@ export class MachineACafé {
         return this._refundedMoney;
     }
 
-    public FlushStoredMoney(): void {
+    public FlushStoredMoneys(): void {
         if (this._storedMoney >= Pièce.CinquanteCentimes.getMontant()) return;
 
+        this._hardware.FlushStoredMoney();
         this.RefundMoneyLessThanCoffeePrice();
         this._storedMoney = 0;
     }

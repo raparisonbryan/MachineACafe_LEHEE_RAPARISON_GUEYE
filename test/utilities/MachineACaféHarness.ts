@@ -31,6 +31,7 @@ export class MachineACaféHarness extends MachineACafé {
     }
 
     public FlushStoredMoney(): void {
-        return this.hardware.FlushStoredMoney();
+        
+        return this.FlushStoredMoneys();
     }
 }
