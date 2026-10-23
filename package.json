@@ -9,5 +9,8 @@
     "scripts": {
         "tsc": "tsc",
         "test": "jest"
+    },
+    "engines": {
+        "node": "^22.23.4"
     }
 }
